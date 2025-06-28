@@ -1,0 +1,5 @@
+From node:20
+WORKDIR /app
+COPY . .
+Run npm i
+CMD ["pnpm", "run", "dev", "--host", "0.0.0.0"]

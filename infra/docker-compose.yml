@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: bakery
+      MYSQL_USER: baker
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: rootpw
+    ports: ["3306:3306"]
+    volumes: ["mysql_data:/var/lib/mysql"]
+
+  backend:
+    build: ../backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bakery
+      SPRING_DATASOURCE_USERNAME: baker
+      SPRING_DATASOURCE_PASSWORD: secret
+    ports: ["8080:8080"]
+    depends_on: [mysql]
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    ports: ["5173:5173"]
+    depends_on: [backend]
+
+volumes:
+  mysql_data:
