@@ -1,0 +1,20 @@
+# root .gitignore
+# Java / Maven / Gradle
+target
+.gradle
+.mvn
+*.log
+
+# Node / pnpm
+node_modules
+dist
+.vite
+
+# IDEs
+.idea
+.vscode
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
