@@ -1,4 +1,4 @@
-package com.familybakery.bakery_backend.model;
+package com.familybakery.bakery_backend.model.ingredient;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +10,4 @@ public class Ingredient {
     private long id;
 
     private String name;
-    private String unit;
-    private double thresholdAmount;
 }

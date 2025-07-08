@@ -1,4 +1,4 @@
-package com.familybakery.bakery_backend.model;
+package com.familybakery.bakery_backend.enums;
 
 public enum Role {
     ADMIN,

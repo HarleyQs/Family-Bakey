@@ -1,4 +1,4 @@
-package com.familybakery.bakery_backend.model;
+package com.familybakery.bakery_backend.model.bread;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

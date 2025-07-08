@@ -1,6 +1,7 @@
 package com.familybakery.bakery_backend.model;
 
 
+import com.familybakery.bakery_backend.enums.Role;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
