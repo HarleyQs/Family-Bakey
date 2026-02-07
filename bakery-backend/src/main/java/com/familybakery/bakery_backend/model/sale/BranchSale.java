@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class BranchSale {
+public class BranchSale implements Sale {
     @Id @GeneratedValue
     private long id;
 
@@ -19,4 +19,9 @@ public class BranchSale {
 
     @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BranchSaleItem> branchSaleItem = new ArrayList<>();
+
+    @Override
+    public Long getId() {
+        return id;
+    }
 }
