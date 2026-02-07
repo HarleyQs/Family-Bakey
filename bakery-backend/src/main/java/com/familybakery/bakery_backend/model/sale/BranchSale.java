@@ -17,7 +17,7 @@ public class BranchSale implements Sale {
 
     private LocalDate localDate;
 
-    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "branchSale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BranchSaleItem> branchSaleItem = new ArrayList<>();
 
     @Override
