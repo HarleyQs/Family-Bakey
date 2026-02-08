@@ -16,6 +16,7 @@ import SignIn from "./pages/SignIn";
 import { RecipesList } from "./pages/recipes/RecipesList";
 import { RecipeDetail } from "./pages/recipes/RecipeDetail";
 import { IngredientsManager } from "./pages/recipes/IngredientsManager";
+import NavBar from "./components/NavBar";
 import HomePage from "./pages/HomePage";
 
 function AppContent() {
@@ -43,6 +44,7 @@ function AppContent() {
   // Show main app content when authenticated
   return (
     <Router>
+      <NavBar />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route

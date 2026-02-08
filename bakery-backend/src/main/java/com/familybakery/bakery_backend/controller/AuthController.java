@@ -25,7 +25,7 @@ public class AuthController {
                 user.put("id", "1");
                 user.put("email", email);
                 user.put("name", "Admin User");
-                user.put("role", "ADMIN");
+                user.put("role", "admin");
                 response.put("token", "mock-jwt-token-admin");
                 response.put("user", user);
                 session.setAttribute("user", user);
@@ -35,7 +35,7 @@ public class AuthController {
                 user.put("id", "2");
                 user.put("email", email);
                 user.put("name", "Manager User");
-                user.put("role", "MANAGER");
+                user.put("role", "manager");
                 response.put("token", "mock-jwt-token-manager");
                 response.put("user", user);
                 session.setAttribute("user", user);
@@ -45,7 +45,7 @@ public class AuthController {
                 user.put("id", "3");
                 user.put("email", email);
                 user.put("name", "Staff User");
-                user.put("role", "STAFF");
+                user.put("role", "staff");
                 response.put("token", "mock-jwt-token-staff");
                 response.put("user", user);
                 session.setAttribute("user", user);
@@ -57,7 +57,7 @@ public class AuthController {
             user.put("id", "1");
             user.put("email", email != null ? email : "user@example.com");
             user.put("name", "Test User");
-            user.put("role", "CUSTOMER");
+            user.put("role", "customer");
             response.put("token", "mock-jwt-token");
             response.put("user", user);
             session.setAttribute("user", user);
