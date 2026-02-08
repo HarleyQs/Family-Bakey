@@ -1,9 +1,9 @@
 package com.familybakery.bakery_backend.repository;
 
-import com.familybakery.bakery_backend.model.sale.Sale;
+import com.familybakery.bakery_backend.model.ingredient.Recipe;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SaleRepository extends JpaRepository<Sale, Long> {
+public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 }

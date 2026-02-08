@@ -18,5 +18,6 @@ public class BranchSaleItem {
 
 
     @ManyToOne
+    @JoinColumn(name = "branch_sale_id")
     private BranchSale branchSale;
 }

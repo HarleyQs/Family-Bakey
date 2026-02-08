@@ -9,6 +9,7 @@ import java.util.List;
 
 @Entity
 public class BranchSale {
+
     @Id @GeneratedValue
     private long id;
 
@@ -17,6 +18,6 @@ public class BranchSale {
 
     private LocalDate localDate;
 
-    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "branchSale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BranchSaleItem> branchSaleItem = new ArrayList<>();
 }
