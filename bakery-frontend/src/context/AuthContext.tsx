@@ -28,21 +28,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user is already logged in on mount
+  // Check session cookie on mount
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      // TODO: Validate token and fetch user data from backend
+    async function checkSession() {
       try {
-        // Placeholder for token validation
-        console.log("Token found, validating...");
-        // setUser(userData);
+        const res = await fetch("/api/auth/session", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user) {
+            setUser(data.user);
+          }
+        } else {
+          setUser(null);
+        }
       } catch (error) {
-        console.error("Token validation failed:", error);
-        localStorage.removeItem("authToken");
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
     }
-    setIsLoading(false);
+    checkSession();
   }, []);
 
   const login = (token: string, userData: User) => {

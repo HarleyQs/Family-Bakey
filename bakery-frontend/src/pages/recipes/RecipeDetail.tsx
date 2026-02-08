@@ -201,7 +201,7 @@ export const RecipeDetail: React.FC = () => {
 
       <Paper sx={{ p: 3, mb: 3 }}>
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6}>
+          <Grid>
             <TextField
               fullWidth
               label="Recipe Name"
@@ -209,7 +209,7 @@ export const RecipeDetail: React.FC = () => {
               onChange={(e) => handleInputChange("name", e.target.value)}
             />
           </Grid>
-          <Grid xs={12} sm={6}>
+          <Grid>
             <TextField
               fullWidth
               label="Category"
@@ -217,7 +217,7 @@ export const RecipeDetail: React.FC = () => {
               onChange={(e) => handleInputChange("category", e.target.value)}
             />
           </Grid>
-          <Grid xs={12}>
+          <Grid>
             <TextField
               fullWidth
               label="Description"
@@ -227,7 +227,7 @@ export const RecipeDetail: React.FC = () => {
               onChange={(e) => handleInputChange("description", e.target.value)}
             />
           </Grid>
-          <Grid xs={12} sm={3}>
+          <Grid>
             <TextField
               fullWidth
               label="Flour Weight (g)"
@@ -238,7 +238,7 @@ export const RecipeDetail: React.FC = () => {
               }
             />
           </Grid>
-          <Grid xs={12} sm={3}>
+          <Grid>
             <TextField
               fullWidth
               label="Total Weight (g)"
@@ -249,7 +249,7 @@ export const RecipeDetail: React.FC = () => {
               }
             />
           </Grid>
-          <Grid xs={12} sm={3}>
+          <Grid>
             <TextField
               fullWidth
               label="Bread Yield"
@@ -260,7 +260,7 @@ export const RecipeDetail: React.FC = () => {
               }
             />
           </Grid>
-          <Grid xs={12} sm={3}>
+          <Grid>
             <FormControl fullWidth>
               <InputLabel>Unit</InputLabel>
               <Select
@@ -273,7 +273,7 @@ export const RecipeDetail: React.FC = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid xs={12}>
+          <Grid>
             <FormControlLabel
               control={
                 <Switch
@@ -375,7 +375,7 @@ export const RecipeDetail: React.FC = () => {
         <DialogTitle>Add Ingredient</DialogTitle>
         <DialogContent sx={{ pt: 2 }}>
           <Grid container spacing={2}>
-            <Grid xs={12}>
+            <Grid>
               <FormControl fullWidth>
                 <InputLabel>Ingredient</InputLabel>
                 <Select
@@ -392,7 +392,7 @@ export const RecipeDetail: React.FC = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid xs={12} sm={6}>
+            <Grid>
               <TextField
                 fullWidth
                 label="Amount"
@@ -401,7 +401,7 @@ export const RecipeDetail: React.FC = () => {
                 onChange={(e) => setIngredientAmount(e.target.value)}
               />
             </Grid>
-            <Grid xs={12} sm={6}>
+            <Grid>
               <FormControl fullWidth>
                 <InputLabel>Unit</InputLabel>
                 <Select

@@ -121,7 +121,9 @@ export const hasPermission = (
   role: UserRole,
   permission: Permission,
 ): boolean => {
-  return rolePermissions[role].includes(permission);
+  const perms = rolePermissions[role];
+  if (!perms) return false;
+  return perms.includes(permission);
 };
 
 /**

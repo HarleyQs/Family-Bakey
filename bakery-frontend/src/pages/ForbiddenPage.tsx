@@ -18,7 +18,7 @@ export const ForbiddenPage: React.FC<ForbiddenPageProps> = ({
       justifyContent="center"
       alignItems="center"
       minHeight="100vh"
-      bgcolor="#f5f5f5"
+      bgcolor="orange"
     >
       <Typography
         variant="h1"

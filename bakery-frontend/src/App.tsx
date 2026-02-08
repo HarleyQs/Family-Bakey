@@ -16,14 +16,11 @@ import SignIn from "./pages/SignIn";
 import { RecipesList } from "./pages/recipes/RecipesList";
 import { RecipeDetail } from "./pages/recipes/RecipeDetail";
 import { IngredientsManager } from "./pages/recipes/IngredientsManager";
+import HomePage from "./pages/HomePage";
 
 function AppContent() {
   const [msg, setMsg] = useState("...Loading");
   const { isAuthenticated, isLoading } = useAuth();
-
-  useEffect(() => {
-    axios.get("api/health").then((res) => setMsg(res.data));
-  }, []);
 
   if (isLoading) {
     return (
@@ -47,6 +44,7 @@ function AppContent() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<HomePage />} />
         <Route
           path="/recipes"
           element={
@@ -80,7 +78,6 @@ function AppContent() {
           }
         />
         <Route path="/signin" element={<SignIn />} />
-        <Route path="/" element={<Navigate to="/recipes" replace />} />
       </Routes>
     </Router>
   );

@@ -232,7 +232,7 @@ export const IngredientsManager: React.FC = () => {
         </DialogTitle>
         <DialogContent sx={{ pt: 2 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid>
               <TextField
                 fullWidth
                 label="Name"
@@ -242,7 +242,7 @@ export const IngredientsManager: React.FC = () => {
                 }
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid>
               <TextField
                 fullWidth
                 label="Unit"
@@ -252,7 +252,7 @@ export const IngredientsManager: React.FC = () => {
                 }
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid>
               <TextField
                 fullWidth
                 label="Unit Price"
@@ -266,7 +266,7 @@ export const IngredientsManager: React.FC = () => {
                 }
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid>
               <FormControlLabel
                 control={
                   <Switch
