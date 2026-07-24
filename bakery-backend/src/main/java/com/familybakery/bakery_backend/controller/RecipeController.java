@@ -27,7 +27,7 @@ public class RecipeController {
     @Autowired
     private IngredientRepository ingredientRepository;
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<List<RecipeDTO>> getAllRecipes() {
         List<RecipeDTO> recipes = recipeRepository.findAll().stream()
                 .map(this::convertToDTO)

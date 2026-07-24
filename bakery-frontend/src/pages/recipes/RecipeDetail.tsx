@@ -80,7 +80,25 @@ export const RecipeDetail: React.FC = () => {
     try {
       setLoading(true);
       const response = await recipeAPI.getById(recipeId);
-      setRecipe(response.data);
+      // Map RecipeDTO to Recipe type
+      const dto = response.data;
+      setRecipe({
+        name: dto.name,
+        description: dto.description,
+        flourWeight: dto.flourWeight,
+        breadYield: dto.breadYield,
+        unit: dto.unit,
+        totalWeight: dto.totalWeight,
+        category: dto.category,
+        active: dto.active,
+        ingredients: dto.ingredients.map((ing) => ({
+          id: ing.id,
+          ingredientId: ing.ingredientId,
+          ingredientName: ing.ingredientName,
+          amount: ing.amount,
+          unit: ing.unit,
+        })),
+      });
       setError(null);
     } catch (err) {
       setError("Failed to load recipe");
@@ -93,10 +111,16 @@ export const RecipeDetail: React.FC = () => {
   const loadIngredients = async () => {
     try {
       const response = await ingredientAPI.getActive();
-      setIngredients(response.data);
+      if (Array.isArray(response.data)) {
+        setIngredients(response.data);
+      } else {
+        setIngredients([]);
+      }
     } catch (err) {
+      setIngredients([]);
       console.error("Failed to load ingredients", err);
     }
+    setLoading(false);
   };
 
   const handleInputChange = (field: string, value: any) => {
@@ -374,48 +398,51 @@ export const RecipeDetail: React.FC = () => {
       >
         <DialogTitle>Add Ingredient</DialogTitle>
         <DialogContent sx={{ pt: 2 }}>
-          <Grid container spacing={2}>
-            <Grid>
-              <FormControl fullWidth>
-                <InputLabel>Ingredient</InputLabel>
-                <Select
-                  value={selectedIngredientId}
-                  onChange={(e) =>
-                    setSelectedIngredientId(e.target.value as number)
-                  }
-                >
-                  {ingredients.map((ing) => (
-                    <MenuItem key={ing.id} value={ing.id}>
-                      {ing.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid>
-              <TextField
-                fullWidth
-                label="Amount"
-                type="number"
-                value={ingredientAmount}
-                onChange={(e) => setIngredientAmount(e.target.value)}
-              />
-            </Grid>
-            <Grid>
-              <FormControl fullWidth>
-                <InputLabel>Unit</InputLabel>
-                <Select
-                  value={ingredientUnit}
-                  onChange={(e) => setIngredientUnit(e.target.value)}
-                >
-                  <MenuItem value="KG">Kg</MenuItem>
-                  <MenuItem value="G">G</MenuItem>
-                  <MenuItem value="ML">Ml</MenuItem>
-                  <MenuItem value="PIECE">Piece</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: 2,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <FormControl fullWidth sx={{ minWidth: 180, flex: 1 }}>
+              <InputLabel>Ingredient</InputLabel>
+              <Select
+                value={selectedIngredientId}
+                onChange={(e) =>
+                  setSelectedIngredientId(e.target.value as number)
+                }
+              >
+                {ingredients.map((ing) => (
+                  <MenuItem key={ing.id} value={ing.id}>
+                    {ing.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              fullWidth
+              label="Amount"
+              type="number"
+              value={ingredientAmount}
+              onChange={(e) => setIngredientAmount(e.target.value)}
+              sx={{ minWidth: 120, flex: 1 }}
+            />
+            <FormControl fullWidth sx={{ minWidth: 120, flex: 1 }}>
+              <InputLabel>Unit</InputLabel>
+              <Select
+                value={ingredientUnit}
+                onChange={(e) => setIngredientUnit(e.target.value)}
+              >
+                <MenuItem value="KG">Kg</MenuItem>
+                <MenuItem value="G">G</MenuItem>
+                <MenuItem value="ML">Ml</MenuItem>
+                <MenuItem value="PIECE">Piece</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setAddIngredientDialogOpen(false)}>

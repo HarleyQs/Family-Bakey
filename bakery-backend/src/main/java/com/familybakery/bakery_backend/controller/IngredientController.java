@@ -27,7 +27,7 @@ public class IngredientController {
         return ResponseEntity.ok(ingredients);
     }
 
-    @GetMapping("/active")
+    @GetMapping(value = "/active", produces = "application/json")
     public ResponseEntity<List<IngredientDTO>> getActiveIngredients() {
         List<IngredientDTO> ingredients = ingredientRepository.findAll().stream()
                 .filter(Ingredient::isActive)

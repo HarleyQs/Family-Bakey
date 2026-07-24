@@ -33,6 +33,29 @@ export interface Recipe {
   ingredients: RecipeIngredient[];
 }
 
+export interface RecipeIngredientDTO {
+  id: number;
+  ingredientId: number;
+  ingredientName: string;
+  amount: number;
+  unit: string;
+}
+
+export interface RecipeDTO {
+  id?: number;
+  name: string;
+  description: string;
+  flourWeight: number;
+  breadYield: number;
+  unit: string;
+  totalWeight: number;
+  category: string;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  ingredients: RecipeIngredientDTO[];
+}
+
 // Ingredient API
 export const ingredientAPI = {
   getAll: () => axios.get<Ingredient[]>(`${API_BASE}/ingredients`),
@@ -51,12 +74,50 @@ export const recipeAPI = {
   getAll: () => axios.get<Recipe[]>(`${API_BASE}/recipes`),
   getActive: () => axios.get<Recipe[]>(`${API_BASE}/recipes/active`),
   getById: (id: number) => axios.get<Recipe>(`${API_BASE}/recipes/${id}`),
-  create: (recipe: Omit<Recipe, "id" | "createdAt" | "updatedAt">) =>
-    axios.post<Recipe>(`${API_BASE}/recipes`, recipe),
+  create: (recipe: Omit<Recipe, "id" | "createdAt" | "updatedAt">) => {
+    // Map Recipe to RecipeDTO
+    const dto: RecipeDTO = {
+      name: recipe.name,
+      description: recipe.description,
+      flourWeight: recipe.flourWeight,
+      breadYield: recipe.breadYield,
+      unit: recipe.unit,
+      totalWeight: recipe.totalWeight,
+      category: recipe.category,
+      active: recipe.active,
+      ingredients: recipe.ingredients.map((ing) => ({
+        id: ing.id,
+        ingredientId: ing.ingredientId,
+        ingredientName: ing.ingredientName,
+        amount: ing.amount,
+        unit: ing.unit,
+      })),
+    };
+    return axios.post<Recipe>(`${API_BASE}/recipes`, dto);
+  },
   update: (
     id: number,
     recipe: Omit<Recipe, "id" | "createdAt" | "updatedAt">,
-  ) => axios.put<Recipe>(`${API_BASE}/recipes/${id}`, recipe),
+  ) => {
+    const dto: RecipeDTO = {
+      name: recipe.name,
+      description: recipe.description,
+      flourWeight: recipe.flourWeight,
+      breadYield: recipe.breadYield,
+      unit: recipe.unit,
+      totalWeight: recipe.totalWeight,
+      category: recipe.category,
+      active: recipe.active,
+      ingredients: recipe.ingredients.map((ing) => ({
+        id: ing.id,
+        ingredientId: ing.ingredientId,
+        ingredientName: ing.ingredientName,
+        amount: ing.amount,
+        unit: ing.unit,
+      })),
+    };
+    return axios.put<Recipe>(`${API_BASE}/recipes/${id}`, dto);
+  },
   delete: (id: number) => axios.delete(`${API_BASE}/recipes/${id}`),
   addIngredient: (
     recipeId: number,
