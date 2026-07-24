@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
 import { UserRole, hasPermission, Permission } from "../types/roles";
+
+axios.defaults.withCredentials = true;
 
 interface User {
   id: string;
@@ -12,7 +15,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (token: string, user: User) => void;
+  login: (user: User) => void;
   logout: () => void;
   isLoading: boolean;
   hasPermission: (permission: Permission) => boolean;
@@ -53,14 +56,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     checkSession();
   }, []);
 
-  const login = (token: string, userData: User) => {
-    localStorage.setItem("authToken", token);
+  const login = (userData: User) => {
     setUser(userData);
   };
 
   const logout = () => {
-    localStorage.removeItem("authToken");
     setUser(null);
+    axios.post("/api/auth/logout").catch(() => {
+      // Best-effort: local state is already cleared either way.
+    });
   };
 
   const checkPermission = (permission: Permission): boolean => {

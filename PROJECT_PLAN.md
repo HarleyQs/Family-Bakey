@@ -24,8 +24,8 @@ Full business/feature spec lives in Notion (not fetchable by tooling — login-w
 |---|---|---|
 | Recipe Management | 🟡 Mostly working | CRUD for Recipe + Ingredient done both ends. Service-layer refactor in progress (see §4). |
 | Ingredient Management | 🟡 Mostly working | CRUD done. Controller bypasses service layer (autowires repository directly). |
-| Auth / Sign-in | 🔴 Mock only | See §3 — this is the current focus area (`feature/signin-page`). |
-| User System / RBAC | 🔴 Broken/inconsistent | Frontend and backend role vocabularies don't match. No server-side enforcement. |
+| Auth / Sign-in | 🟢 Done | Real session auth: BCrypt + `UserDetailsService` + DB-backed users, seeded test accounts per role. See §3. |
+| User System / RBAC | 🟡 Partial | Role vocabularies now aligned (6 spec roles both ends). Client-side route/nav guards follow the spec matrix. **Still no server-side per-endpoint enforcement** — `SecurityConfig` remains `permitAll()` (see §3). |
 | Sales | ⚪ Not started | `Sale`, `BranchSale`, `BranchSaleItem` entities exist, no controller/service, no frontend page. Two competing data models exist (`Sale` standalone vs `BranchSale`/`BranchSaleItem` — needs a decision, see §5). |
 | Production | ⚪ Not started | `ProductionLog`, `ProductionBatch`, `ProductionBatchItem` entities exist, no controller/service, no frontend page. |
 | Stock Management | ⚪ Not started | `IngredientStock`, `BreadStock` entities exist (with threshold field), no controller/service, no frontend page. |
@@ -37,28 +37,28 @@ Legend: 🔴 broken/blocking · 🟡 partial/in-progress · ⚪ not started · �
 
 ---
 
-## 3. Auth / RBAC — current focus
+## 3. Auth / RBAC — current state
 
-This is the crux of `feature/signin-page` and the biggest gap before any other module can safely go live.
+Sign-in is now real (done on `feature/signin-page`, 2026-07-24):
 
-**Backend (`AuthController`, `SecurityConfig`):**
-- Sign-in is hard-coded: 3 fixed credential pairs + a catch-all "default test user" that accepts any other email/password.
-- "Token" is a fake string (`mock-jwt-token-admin`), not a real JWT — no signing, no verification.
-- `SecurityConfig` currently `permitAll()`s every request — **no server-side authorization exists at all.**
-- The real `User` JPA entity / `UserRepository` / `Role` enum are not wired into the auth flow.
-- No `PasswordEncoder`, no `UserDetailsService`, no JWT filter.
-- Logout doesn't invalidate the session.
+**Backend:**
+- Session-based auth: `AuthenticationManager` + `UserDetailsServiceImpl` (backed by `UserRepository`) + BCrypt `PasswordEncoder`. No JWT — the "token" concept was dropped in favor of the `JSESSIONID` cookie (fits same-origin Vite-proxy setup; revisit if a mobile client ever appears).
+- `User` entity now has `email` (unique) / `name` / `password` / `Role`; table renamed `app_user` (`user` is reserved in some DBs).
+- `UserSeeder` seeds one account per role on startup (H2 in-memory only — replace with real user management before pointing at MySQL). Credentials: `<role>@familybakery.com` / `<role>123` (baker uses `baker@…`/`baker123`).
+- `/api/auth/signin` (401 on bad credentials — the old catch-all "any password works" user is gone), `/api/auth/session` (restores session on page reload), `/api/auth/logout` (invalidates the server session via `SecurityContextLogoutHandler`).
+- Old mock `SessionController` deleted — superseded by `AuthController.session()`.
 
-**Frontend (`types/roles.ts`, `AuthContext`, `ProtectedRoute`, `useCanAccess`):**
-- Well-designed permission model (`Permission` enum, `rolePermissions` map, route guards) — but enforced **client-side only**, and against the wrong role set.
-- `UserRole` = `admin, owner, manager, staff, customer` — does not match backend `Role` enum (`ADMIN, OWNER, MANAGER, ACCOUNTING, BAKER, CASHIER`) or the Notion spec's 6 roles. Missing `accounting`/`cashier`, has extra `staff`/`customer` that aren't in the spec.
-- `config/routes.ts` defines a route/permission map that isn't actually used by `App.tsx`/`NavBar.tsx` (those hardcode their own lists) — likely dead code or an unfinished intended refactor.
+**Frontend:**
+- `UserRole` now matches the backend/spec 6 roles: `admin, owner, manager, accounting, baker, cashier` (lowercase over the wire; backend lowercases `Role.name()` in responses).
+- `rolePermissions` follows the spec's cross-module access matrix (see memory `family-bakery-features-roles.md`); added `READ/WRITE_PRODUCTION` and `READ/WRITE_FINANCE` permissions.
+- `AuthContext` no longer stores a fake token in localStorage; auth state lives in the server session cookie (`axios.defaults.withCredentials = true`).
+- NavBar links filtered per the matrix (e.g. baker sees Production but not Sales; cashier sees Sales only).
 
-**To close this out:**
-1. Decide on final role set (recommend: adopt the Notion 6 roles everywhere — `ADMIN, OWNER, MANAGER, ACCOUNTING, BAKER, CASHIER` — and update frontend `UserRole`/`Permission` map to match).
-2. Implement real backend auth: `UserDetailsService` backed by `UserRepository`, `PasswordEncoder` (BCrypt), real JWT (or session-based) issuance/verification, and role-based `SecurityConfig` rules replacing `permitAll()`.
-3. Wire `config/routes.ts` into actual routing, or delete it if superseded.
-4. Make logout invalidate the server session/token.
+**Still open (blocking "done" for User System/RBAC):**
+1. **Server-side per-endpoint authorization** — `SecurityConfig` still `permitAll()`s everything; add role-based `requestMatchers` rules per the access matrix.
+2. Wire `config/routes.ts` into actual routing, or delete it if superseded (still unused by `App.tsx`/`NavBar.tsx`).
+3. Sign up / forgot-password links on the sign-in page are dead (`/signup`, `/forgot-password` routes don't exist) — implement or remove.
+4. User management UI (create/edit users) — currently seed-only.
 
 ---
 
@@ -86,7 +86,7 @@ This is the crux of `feature/signin-page` and the biggest gap before any other m
 
 Roughly following the spec's data dependency chain (Production needs Recipes; Sales needs Production; Finance needs Sales+Stock; Dashboard needs everything):
 
-1. **Finish Auth/RBAC** (§3) — nothing else should be considered "done" while every endpoint is wide open.
+1. **Server-side RBAC enforcement** (§3) — sign-in is done, but every endpoint is still wide open (`permitAll()`); nothing else should be considered "done" until that's closed.
 2. **Finish Recipe/Ingredient refactor** (§4) — small, already in flight.
 3. **Stock Management** — inventory + thresholds; needed before Production can warn on shortages.
 4. **Production** — daily production input, dough/ingredient calc, ties into Stock.
@@ -98,4 +98,5 @@ Roughly following the spec's data dependency chain (Production needs Recipes; Sa
 
 ## 7. Changelog
 
+- **2026-07-24** — **Real sign-in implemented** (`feature/signin-page`): session-based auth (BCrypt + `UserDetailsService` + DB users + per-role seeder), 401 on bad credentials, working session restore and server-side logout; deleted mock `SessionController`. Frontend roles aligned to the spec's 6 roles, `rolePermissions` rewritten from the access matrix, fake-token localStorage flow removed. Verified end-to-end in a browser (login, bad creds, reload persistence, logout, per-role nav). Server-side endpoint authorization still open.
 - **2026-07-24** — Initial version of this plan created after full codebase + Notion spec review. Captured current module status, auth gap, in-progress recipe refactor, and known issues.

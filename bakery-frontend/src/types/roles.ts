@@ -1,13 +1,18 @@
 /* ============================================
    ROLE-BASED ACCESS CONTROL (RBAC) SYSTEM
+   Role set mirrors the backend Role enum
+   (ADMIN, OWNER, MANAGER, ACCOUNTING, BAKER, CASHIER).
+   Permission map follows the cross-module access matrix
+   in the Notion "Feature and Roles Specification".
    ============================================ */
 
 export const UserRole = {
   ADMIN: "admin",
   OWNER: "owner",
   MANAGER: "manager",
-  STAFF: "staff",
-  CUSTOMER: "customer",
+  ACCOUNTING: "accounting",
+  BAKER: "baker",
+  CASHIER: "cashier",
 } as const;
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole];
@@ -17,7 +22,7 @@ export const Permission = {
   READ_DASHBOARD: "read_dashboard",
   WRITE_DASHBOARD: "write_dashboard",
 
-  // Products/Bread
+  // Products/Recipes/Ingredients
   READ_PRODUCTS: "read_products",
   WRITE_PRODUCTS: "write_products",
   DELETE_PRODUCTS: "delete_products",
@@ -27,9 +32,17 @@ export const Permission = {
   WRITE_SALES: "write_sales",
   DELETE_SALES: "delete_sales",
 
-  // Inventory
+  // Production
+  READ_PRODUCTION: "read_production",
+  WRITE_PRODUCTION: "write_production",
+
+  // Inventory / Stock
   READ_INVENTORY: "read_inventory",
   WRITE_INVENTORY: "write_inventory",
+
+  // Finance
+  READ_FINANCE: "read_finance",
+  WRITE_FINANCE: "write_finance",
 
   // Users/Accounts
   READ_USERS: "read_users",
@@ -48,8 +61,10 @@ export const Permission = {
 export type Permission = (typeof Permission)[keyof typeof Permission];
 
 /**
- * Role to Permissions mapping
- * Define which permissions each role has
+ * Role to Permissions mapping, derived from the spec's cross-module
+ * access matrix (Sales / Production / Stock / Finance / Dashboard).
+ * Products (Recipes/Ingredients) aren't in that matrix directly; they're
+ * treated like Stock, since recipes drive ingredient consumption.
  */
 export const rolePermissions: Record<UserRole, Permission[]> = {
   [UserRole.ADMIN]: [
@@ -62,8 +77,12 @@ export const rolePermissions: Record<UserRole, Permission[]> = {
     Permission.READ_SALES,
     Permission.WRITE_SALES,
     Permission.DELETE_SALES,
+    Permission.READ_PRODUCTION,
+    Permission.WRITE_PRODUCTION,
     Permission.READ_INVENTORY,
     Permission.WRITE_INVENTORY,
+    Permission.READ_FINANCE,
+    Permission.WRITE_FINANCE,
     Permission.READ_USERS,
     Permission.WRITE_USERS,
     Permission.DELETE_USERS,
@@ -74,43 +93,63 @@ export const rolePermissions: Record<UserRole, Permission[]> = {
   ],
 
   [UserRole.OWNER]: [
-    // Owner can read all but limited write access
+    // Owner: read-only across the board
     Permission.READ_DASHBOARD,
     Permission.READ_PRODUCTS,
     Permission.READ_SALES,
+    Permission.READ_PRODUCTION,
     Permission.READ_INVENTORY,
+    Permission.READ_FINANCE,
     Permission.READ_USERS,
     Permission.READ_REPORTS,
     Permission.READ_SETTINGS,
   ],
 
   [UserRole.MANAGER]: [
-    // Manager can manage products, sales, and inventory
+    // Manager: RW on Sales/Production, read-only on Stock/Finance
     Permission.READ_DASHBOARD,
     Permission.WRITE_DASHBOARD,
     Permission.READ_PRODUCTS,
-    Permission.WRITE_PRODUCTS,
     Permission.READ_SALES,
     Permission.WRITE_SALES,
+    Permission.READ_PRODUCTION,
+    Permission.WRITE_PRODUCTION,
     Permission.READ_INVENTORY,
-    Permission.WRITE_INVENTORY,
+    Permission.READ_FINANCE,
     Permission.READ_USERS,
     Permission.READ_REPORTS,
   ],
 
-  [UserRole.STAFF]: [
-    // Staff can read most things and write to sales/inventory
+  [UserRole.ACCOUNTING]: [
+    // Accounting: RW on Stock/Finance, read-only on Sales, no Production
     Permission.READ_DASHBOARD,
     Permission.READ_PRODUCTS,
+    Permission.WRITE_PRODUCTS,
     Permission.READ_SALES,
-    Permission.WRITE_SALES,
+    Permission.READ_INVENTORY,
+    Permission.WRITE_INVENTORY,
+    Permission.READ_FINANCE,
+    Permission.WRITE_FINANCE,
+    Permission.READ_REPORTS,
+    Permission.WRITE_REPORTS,
+  ],
+
+  [UserRole.BAKER]: [
+    // Head Baker: RW on Production/Stock, no Sales/Finance, limited Dashboard
+    Permission.READ_DASHBOARD,
+    Permission.READ_PRODUCTS,
+    Permission.WRITE_PRODUCTS,
+    Permission.READ_PRODUCTION,
+    Permission.WRITE_PRODUCTION,
     Permission.READ_INVENTORY,
     Permission.WRITE_INVENTORY,
   ],
 
-  [UserRole.CUSTOMER]: [
-    // Customer can only read minimal info
+  [UserRole.CASHIER]: [
+    // Cashier: RW on Sales only, no Dashboard/Stock/Finance/Production
     Permission.READ_PRODUCTS,
+    Permission.READ_SALES,
+    Permission.WRITE_SALES,
   ],
 };
 

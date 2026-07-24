@@ -22,8 +22,9 @@ export const useCanAccess = () => {
     isAdmin: user?.role === "admin",
     isOwner: user?.role === "owner",
     isManager: user?.role === "manager",
-    isStaff: user?.role === "staff",
-    isCustomer: user?.role === "customer",
+    isAccounting: user?.role === "accounting",
+    isBaker: user?.role === "baker",
+    isCashier: user?.role === "cashier",
   };
 };
 

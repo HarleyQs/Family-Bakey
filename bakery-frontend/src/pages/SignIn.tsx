@@ -44,11 +44,12 @@ export const SignIn: React.FC = () => {
     setError(null);
 
     try {
-      const response = await axios.post("/api/auth/signin", formData);
+      const response = await axios.post("/api/auth/signin", formData, {
+        withCredentials: true,
+      });
 
-      if (response.data.token && response.data.user) {
-        // Call login from AuthContext
-        login(response.data.token, {
+      if (response.data.user) {
+        login({
           id: response.data.user.id,
           email: response.data.user.email,
           name: response.data.user.name,
@@ -56,7 +57,6 @@ export const SignIn: React.FC = () => {
         });
         setSuccess(true);
       }
-      console.log("Sign in successful:", response.data);
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(
